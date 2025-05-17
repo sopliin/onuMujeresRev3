@@ -15,7 +15,7 @@ public class UsuarioDAO extends BaseDAO{
         ArrayList<Usuario> listaUsuarios = new ArrayList<>();
 
         String sql = "select * from onu_mujeres.usuarios u\n" +
-                    "left join onu_mujeres.roles r on (u.rol_id = r.rol_id)\n" +
+                    "inner join onu_mujeres.roles r on ((u.rol_id = 1 or u.rol_id = 2) and (u.rol_id = r.rol_id))\n" +
                     "left join onu_mujeres.distritos d on (u.distrito_id = d.distrito_id)\n" +
                     "left join onu_mujeres.zonas z on (u.zona_id = z.zona_id)";
         try (Connection conn = getConnection();
@@ -35,11 +35,11 @@ public class UsuarioDAO extends BaseDAO{
 
         Usuario usuario = null;
 
-        String sql = "select * from onu_mujeres.usuarios u\n" +
-                    "left join onu_mujeres.roles r on u.rol_id = r.rol_id\n" +
-                    "left join onu_mujeres.distritos d on u.distrito_id = d.distrito_id\n" +
-                    "left join onu_mujeres.zonas z on u.zona_id = z.zona_id\n" +
-                    "where u.rol_id = ?";
+        String sql = "SELECT * FROM onu_mujeres.usuarios u\n" +
+                    "LEFT JOIN onu_mujeres.roles r ON u.rol_id = r.rol_id\n" +
+                    "LEFT JOIN onu_mujeres.distritos d ON u.distrito_id = d.distrito_id\n" +
+                    "LEFT JOIN onu_mujeres.zonas z ON u.zona_id = z.zona_id\n" +
+                    "WHERE u.rol_id = ?";
 
         try (Connection conn = getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -71,18 +71,44 @@ public class UsuarioDAO extends BaseDAO{
     }
 
     //"Desactivar a los usuarios tipo coordi o encuestador"
-    public void desactivarUsuario(int usuarioid) {
+    public void desactivarUsuario(int usuarioId) {
 
-        String sql = "update onu_mujeres.usuarios set estado = 'inactivo' where usuario_id = ?";
+        String sql = "UPDATE onu_mujeres.usuarios SET estado = 'inactivo' WHERE usuario_id = ?";
 
         try (Connection conn = getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
-            pstmt.setInt(1, usuarioid);
+            pstmt.setInt(1, usuarioId);
             pstmt.executeUpdate();
 
         } catch (SQLException ex) {
             ex.printStackTrace();
+        }
+    }
+
+    //Activar usuario tipo coordi o encuestador
+    public void activarUsuario(int usuarioId) {
+        String sql = "UPDATE onu_mujeres.usuarios SET estado = 'activo' WHERE usuario_id = ?";
+        // Similar a desactivarUsuario() pero con estado 'activo'
+        try (Connection conn = getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setInt(1, usuarioId);
+            pstmt.executeUpdate();
+
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+    }
+
+    public boolean existeDNI(String dni) throws SQLException {
+        String sql = "SELECT COUNT(*) FROM usuarios WHERE dni = ?";
+        try (Connection conn = getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, dni);
+            try (ResultSet rs = pstmt.executeQuery()) {
+                return rs.next() && rs.getInt(1) > 0;
+            }
         }
     }
 
@@ -111,7 +137,7 @@ public class UsuarioDAO extends BaseDAO{
         usuario.setDistrito(distrito);
 
         //Si el atributo no es nulo:
-        if(rs.getInt("codigo_unico_encuestador") != 0){
+        if(rs.getString("codigo_unico_encuestador") != null){
             //Es encuestador
             usuario.setCodigoUnicoEncuestador(rs.getString("codigo_unico_encuestador"));
         }
