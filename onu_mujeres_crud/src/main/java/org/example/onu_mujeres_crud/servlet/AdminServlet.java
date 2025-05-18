@@ -7,7 +7,9 @@ import org.example.onu_mujeres_crud.beans.Distrito;
 import org.example.onu_mujeres_crud.beans.Rol;
 import org.example.onu_mujeres_crud.beans.Usuario;
 import org.example.onu_mujeres_crud.beans.Zona;
+import org.example.onu_mujeres_crud.daos.DistritoDAO;
 import org.example.onu_mujeres_crud.daos.UsuarioDAO;
+import org.example.onu_mujeres_crud.daos.ZonaDAO;
 
 import java.io.IOException;
 import java.sql.SQLException;
@@ -20,6 +22,8 @@ public class AdminServlet extends HttpServlet {
 
         RequestDispatcher view;
         UsuarioDAO usuarioDAO = new UsuarioDAO();
+        DistritoDAO distritoDAO = new DistritoDAO();
+        ZonaDAO zonaDAO = new ZonaDAO();
         switch (action) {
             case "lista":
                 request.setAttribute("listaUsuarios", usuarioDAO.listarUsuariosAsAdmin());
@@ -28,6 +32,8 @@ public class AdminServlet extends HttpServlet {
                 break;
             case "agregar":
                 request.setAttribute("listaCoordinadores",usuarioDAO.listarUsuariosAsAdmin());
+                request.setAttribute("listaZonas", zonaDAO.obtenerListaZonas());
+                request.setAttribute("listaDistritos", distritoDAO.obtenerListaDistritos());
                 view = request.getRequestDispatcher("admin/formularioNuevo.jsp");
                 view.forward(request, response);
                 break;
@@ -68,6 +74,7 @@ public class AdminServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        String action = request.getParameter("action") == null ? "lista" : request.getParameter("action");
         UsuarioDAO usuarioDAO = new UsuarioDAO();
         Usuario usuario = new Usuario();
 
@@ -86,6 +93,11 @@ public class AdminServlet extends HttpServlet {
         zona.setZonaId(Integer.parseInt(request.getParameter("zonaId")));
         usuario.setZona(zona);
 
+        //Capturar Distrito-id desde el form
+        Distrito distrito = new Distrito();
+        distrito.setDistritoId(Integer.parseInt(request.getParameter("distritoId")));
+        usuario.setDistrito(distrito);
+
         try {
             //Validar dni unico
             if(usuarioDAO.existeDNI(usuario.getDni())) {
@@ -98,5 +110,13 @@ public class AdminServlet extends HttpServlet {
             request.setAttribute("error", "Error al registrar nuevo coordinador");
             request.getRequestDispatcher("admin/formularioNuevo.jsp").forward(request, response);
         }
+
+        switch (action) {
+            case "guardar":
+                usuarioDAO.registrarCoordinador(usuario);
+                response.sendRedirect("AdminServlet");
+                break;
+        }
+
     }
 }

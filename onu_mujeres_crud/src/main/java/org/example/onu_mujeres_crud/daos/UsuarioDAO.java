@@ -32,9 +32,7 @@ public class UsuarioDAO extends BaseDAO{
     }
 
     public Usuario obtenerUsuario(int usuarioId) {
-
         Usuario usuario = null;
-
         String sql = "SELECT * FROM onu_mujeres.usuarios u\n" +
                     "LEFT JOIN onu_mujeres.roles r ON u.rol_id = r.rol_id\n" +
                     "LEFT JOIN onu_mujeres.distritos d ON u.distrito_id = d.distrito_id\n" +

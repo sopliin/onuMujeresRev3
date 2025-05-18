@@ -1,4 +1,8 @@
+<%@ page import="org.example.onu_mujeres_crud.beans.Zona" %>
+<%@ page import="org.example.onu_mujeres_crud.beans.Distrito" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<jsp:useBean id="listaZonas" type="java.util.ArrayList<Zona>" scope="request"/>
+<jsp:useBean id="listaDistritos" type="java.util.ArrayList<Distrito>" scope="request"/>
 <html>
 <head>
   <title>Registrar Nuevo Coordinador</title>
@@ -15,7 +19,7 @@
         }
       %>
 
-      <form action="AdminServlet" method="post">
+      <form action="AdminServlet?action=guardar" method="post">
         <div class="row mb-3">
           <label class="form-label">Nombre:</label>
           <input type="text" name="nombre" class="form-control" required>
@@ -43,12 +47,31 @@
 
         <div class="mb-3">
           <label class="form-label">Zona Asignada:</label>
-          <select name="zona" class="form-select" required>
-            <option value="" disabled selected>Seleccione una zona</option>
-            <option value="1">Norte</option>
-            <option value="2">Sur</option>
-            <option value="3">Este</option>
-            <option value="4">Oeste</option>
+          <select name="zonaId" class="form-select" required>
+            <%
+              for (Zona zona : listaZonas) {
+            %>
+                <option value="<%=zona.getZonaId()%>">
+                  <%=zona.getNombre()%>
+                </option>
+            <%
+              }
+            %>
+          </select>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">Distrito Asignado</label>
+          <select name="distritoId" class="form-select" required>
+            <%
+              for (Distrito distrito : listaDistritos) {
+            %>
+            <option value="<%=distrito.getDistritoId()%>">
+              <%=distrito.getNombre()%>
+            </option>
+            <%
+              }
+            %>
           </select>
         </div>
 
