@@ -8,7 +8,7 @@ import org.example.onu_mujeres_crud.beans.Rol;
 import org.example.onu_mujeres_crud.beans.Usuario;
 import org.example.onu_mujeres_crud.beans.Zona;
 import org.example.onu_mujeres_crud.daos.DistritoDAO;
-import org.example.onu_mujeres_crud.daos.UsuarioDAO;
+import org.example.onu_mujeres_crud.daos.UsuarioAdminDao;
 import org.example.onu_mujeres_crud.daos.ZonaDAO;
 
 import java.io.IOException;
@@ -21,7 +21,7 @@ public class AdminServlet extends HttpServlet {
         String action = request.getParameter("action") == null ? "lista" : request.getParameter("action");
 
         RequestDispatcher view;
-        UsuarioDAO usuarioDAO = new UsuarioDAO();
+        UsuarioAdminDao usuarioDAO = new UsuarioAdminDao();
         DistritoDAO distritoDAO = new DistritoDAO();
         ZonaDAO zonaDAO = new ZonaDAO();
         switch (action) {
@@ -75,7 +75,7 @@ public class AdminServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String action = request.getParameter("action") == null ? "lista" : request.getParameter("action");
-        UsuarioDAO usuarioDAO = new UsuarioDAO();
+        UsuarioAdminDao usuarioDAO = new UsuarioAdminDao();
         Usuario usuario = new Usuario();
 
         usuario.setNombre(request.getParameter("nombre"));

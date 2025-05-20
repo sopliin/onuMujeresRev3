@@ -8,9 +8,9 @@ import org.example.onu_mujeres_crud.beans.Zona;
 import java.sql.*;
 import java.util.ArrayList;
 
-public class UsuarioDAO extends BaseDAO{
+public class UsuarioAdminDao extends BaseDAO{
 
-    //Para admin, listar todos los usuarios
+    //Para admin, listar todos los usuarios entre Coordis y Encuestadores
     public ArrayList<Usuario> listarUsuariosAsAdmin() {
         ArrayList<Usuario> listaUsuarios = new ArrayList<>();
 
@@ -55,8 +55,8 @@ public class UsuarioDAO extends BaseDAO{
 
     //Registrar usuario para admin (crear coordinadores mediante el ingreso de nombre, apellido, DNI, Correo y zona)
     public void registrarCoordinador(Usuario usuario) {
-        String sql = "INSERT INTO onu_mujeres.usuarios (rol_id, nombre, apellido_paterno, apellido_materno, dni, correo, zona_id)\n"
-                    + "VALUES (?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO onu_mujeres.usuarios (rol_id, nombre, apellido_paterno, apellido_materno, dni, correo, zona_id, distrito_id)\n"
+                    + "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
 
         try (Connection conn = getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -68,10 +68,12 @@ public class UsuarioDAO extends BaseDAO{
         }
     }
 
+
+
     //"Desactivar a los usuarios tipo coordi o encuestador"
     public void desactivarUsuario(int usuarioId) {
 
-        String sql = "UPDATE onu_mujeres.usuarios SET estado = 'inactivo' WHERE usuario_id = ?";
+        String sql = "UPDATE onu_mujeres.usuarios SET estado = 'baneado' WHERE usuario_id = ?";
 
         try (Connection conn = getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -171,6 +173,11 @@ public class UsuarioDAO extends BaseDAO{
             pstmt.setNull(7, Types.INTEGER);
         } else {
             pstmt.setInt(7, usuario.getZona().getZonaId());
+        }
+        if (usuario.getDistrito() == null) {
+            pstmt.setNull(8, Types.INTEGER);
+        } else {
+            pstmt.setInt(8, usuario.getDistrito().getDistritoId());
         }
     }
 }

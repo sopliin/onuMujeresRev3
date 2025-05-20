@@ -28,12 +28,12 @@
     <table class="table table-hover">
         <thead>
             <tr>
-                <th>Rol</th>
                 <th>Nombre</th>
                 <th>Apellidos</th>
                 <th>DNI</th>
                 <th>Correo</th>
-                <th>Zona</th>
+                <th>Rol</th>
+                <th>Zona / Distrito</th>
                 <th>Acciones</th>
             </tr>
         </thead>
@@ -44,19 +44,19 @@
                 for (Usuario usuario : listaUsuarios) {
         %>
                     <tr>
-                        <td><%=usuario.getRol().getNombre()%></td>
                         <td><%=usuario.getNombre()%></td>
                         <td><%=usuario.getApellidoPaterno()%> <%=usuario.getApellidoMaterno()%></td>
                         <td><%=usuario.getDni()%></td>
                         <td><%=usuario.getCorreo()%></td>
-                        <td><%=usuario.getZona().getNombre()%></td>
+                        <td><%=usuario.getRol().getNombre()%></td>
+                        <td><%=usuario.getZona().getNombre()%> / <%=usuario.getDistrito().getNombre()%></td>
                         <td>
                         <%
                             if(usuario.getEstado().equalsIgnoreCase("activo")){
                         %>
-                                <a href="AdminServlet?action=desactivar&id=<%=usuario.getUsuarioId()%>" class="btn btn-dark btn-sm text-white">Desactivar</a>
+                                <a href="AdminServlet?action=desactivar&id=<%=usuario.getUsuarioId()%>" class="btn btn-danger btn-sm text-white">Banear</a>
                         <%
-                            } else if(usuario.getEstado().equalsIgnoreCase("inactivo")) {
+                            } else if(usuario.getEstado().equalsIgnoreCase("baneado")) {
                         %>
                                 <a href="AdminServlet?action=activar&id=<%=usuario.getUsuarioId()%>" class="btn btn-success btn-sm text-white">Activar</a>
                         <%
